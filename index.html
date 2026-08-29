@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salary Dynamics | Modern Payroll Dashboard</title>
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="A premium, dynamic payroll management and salary calculation dashboard for employees.">
+    <!-- Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <!-- Radial Background Effects -->
+    <div class="glow-bg glow-purple"></div>
+    <div class="glow-bg glow-blue"></div>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <svg class="brand-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div class="brand-info">
+                    <h2>SalaryDynamics</h2>
+                    <span>Enterprise v1.0</span>
+                </div>
+            </div>
+            <nav class="nav-menu">
+                <button class="nav-item active" data-tab="dashboard" id="btn-tab-dashboard">
+                    <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4zM14 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4z" />
+                    </svg>
+                    Dashboard
+                </button>
+                <button class="nav-item" data-tab="register" id="btn-tab-register">
+                    <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                    </svg>
+                    Register Employee
+                </button>
+                <button class="nav-item" data-tab="loghours" id="btn-tab-loghours">
+                    <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Log Daily Hours
+                </button>
+                <button class="nav-item" data-tab="calculate" id="btn-tab-calculate">
+                    <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 11h.01M12 7h.01M9 11h.01M12 14h.01M15 11h.01M15 14h.01M13 22h4a2 2 0 002-2V4a2 2 0 00-2-2H7a2 2 0 00-2 2v16a2 2 0 002 2h4" />
+                    </svg>
+                    Calculate Salary
+                </button>
+                <button class="nav-item" data-tab="logs" id="btn-tab-logs">
+                    <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                    </svg>
+                    Activity Log Feed
+                </button>
+            </nav>
+            <div class="sidebar-footer">
+                <span id="live-date">Loading date...</span>
+            </div>
+        </aside>
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="top-header">
+                <div class="header-title">
+                    <span class="sub">Platform Access</span>
+                    <h1 id="page-title">Dashboard Overview</h1>
+                </div>
+                <div class="system-status">
+                    <span class="status-indicator"></span>
+                    <span class="status-text">Server Online</span>
+                </div>
+            </header>
+            <!-- Container for Toast Notifications -->
+            <div id="toast-container"></div>
+            <!-- Page Sections -->
+            <!-- Dashboard View -->
+            <section id="tab-dashboard" class="tab-content active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon-wrapper purple">
+                            <svg class="stat-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="stat-total-employees">0</h3>
+                            <span>Employees Registered</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon-wrapper blue">
+                            <svg class="stat-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="stat-total-hours">0h</h3>
+                            <span>Total Hours Logged</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon-wrapper green">
+                            <svg class="stat-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 8h6m-5 0a3 3 0 110 6m0-6V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="stat-total-entries">0</h3>
+                            <span>Total Days Logged</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="content-row">
+                    <div class="dashboard-panel">
+                        <div class="panel-header">
+                            <h2>Registered Staff Directory</h2>
+                            <div class="search-box">
+                                <svg class="search-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                                <input type="text" id="employee-search" placeholder="Search employees name or CNIC...">
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <table id="employees-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>CNIC Number</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="employees-list-body">
+                                    <!-- Populated dynamically -->
+                                    <tr>
+                                        <td colspan="3" class="empty-state">No employees registered yet. Click "Register Employee" to start.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- Register Employee View -->
+            <section id="tab-register" class="tab-content">
+                <div class="glass-form-card">
+                    <div class="form-header">
+                        <h2>New Employee Registration</h2>
+                        <p>Provide the employee's name and CNIC number to create their record in the central ledger.</p>
+                    </div>
+                    <form id="form-register">
+                        <div class="form-group">
+                            <label for="reg-name">Employee Full Name</label>
+                            <input type="text" id="reg-name" placeholder="e.g. Abdul Rehman Abid" required autocomplete="off">
+                            <span class="help-text">Enter name as printed on CNIC.</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="reg-cnic">CNIC Number</label>
+                            <input type="text" id="reg-cnic" placeholder="xxxxx-xxxxxxx-x" required autocomplete="off" maxlength="15">
+                            <span class="help-text" id="cnic-validation-msg">Must be 13 digits (format: xxxxx-xxxxxxx-x).</span>
+                        </div>
+                        <button type="submit" class="btn-primary" id="btn-submit-register">
+                            Register Employee Record
+                            <svg class="btn-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </button>
+                    </form>
+                </div>
+            </section>
+            <!-- Log Daily Hours View -->
+            <section id="tab-loghours" class="tab-content">
+                <div class="glass-form-card">
+                    <div class="form-header">
+                        <h2>Log Daily Work Hours</h2>
+                        <p>Select a registered employee and log the total hours they completed today.</p>
+                    </div>
+                    <form id="form-loghours">
+                        <div class="form-group">
+                            <label for="log-cnic-select">Select Employee</label>
+                            <select id="log-cnic-select" required>
+                                <option value="" disabled selected>-- Select Registered Employee --</option>
+                            </select>
+                            <span class="help-text">Select employee by Name & CNIC.</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="log-hours-input">Hours Worked Today</label>
+                            <div class="slider-container">
+                                <input type="range" id="log-hours-input" min="1" max="24" value="8" class="range-slider">
+                                <span class="slider-bubble" id="hours-bubble">8 hrs</span>
+                            </div>
+                            <span class="help-text">Provide hours worked today (1 - 24 hours).</span>
+                        </div>
+                        <button type="submit" class="btn-primary" id="btn-submit-log">
+                            Log Hours to Record
+                            <svg class="btn-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </button>
+                    </form>
+                </div>
+            </section>
+            <!-- Calculate Salary View -->
+            <section id="tab-calculate" class="tab-content">
+                <div class="glass-form-card">
+                    <div class="form-header">
+                        <h2>Generate Salary Statement</h2>
+                        <p>Select an employee and set their hourly rate to calculate total accumulated earnings.</p>
+                    </div>
+                    <form id="form-calculate">
+                        <div class="form-group">
+                            <label for="calc-cnic-select">Select Employee</label>
+                            <select id="calc-cnic-select" required>
+                                <option value="" disabled selected>-- Select Registered Employee --</option>
+                            </select>
+                            <span class="help-text">Select employee to compute wages.</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="calc-rate">Hourly Rate (Rupees/Hour)</label>
+                            <input type="number" id="calc-rate" placeholder="e.g. 500" min="1" required autocomplete="off">
+                            <div class="chip-container">
+                                <button type="button" class="rate-chip" data-rate="250">Rs. 250</button>
+                                <button type="button" class="rate-chip" data-rate="500">Rs. 500</button>
+                                <button type="button" class="rate-chip" data-rate="1000">Rs. 1,000</button>
+                                <button type="button" class="rate-chip" data-rate="1500">Rs. 1,500</button>
+                            </div>
+                            <span class="help-text">Enter the compensation rate per hour.</span>
+                        </div>
+                        <button type="submit" class="btn-primary" id="btn-submit-calc">
+                            Compute & Generate Pay Slip
+                            <svg class="btn-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 11h.01M12 7h.01M9 11h.01M12 14h.01M15 11h.01M15 14h.01M13 22h4a2 2 0 002-2V4a2 2 0 00-2-2H7a2 2 0 00-2 2v16a2 2 0 002 2h4" />
+                            </svg>
+                        </button>
+                    </form>
+                </div>
+            </section>
+            <!-- Logs Feed View -->
+            <section id="tab-logs" class="tab-content">
+                <div class="dashboard-panel">
+                    <div class="panel-header">
+                        <h2>System Hourly Log Feed</h2>
+                        <div class="search-box">
+                            <svg class="search-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                            <input type="text" id="logs-search" placeholder="Search date, name or CNIC...">
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table id="logs-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Employee Name</th>
+                                    <th>CNIC Number</th>
+                                    <th>Hours Worked</th>
+                                </tr>
+                            </thead>
+                            <tbody id="logs-list-body">
+                                <!-- Populated dynamically -->
+                                <tr>
+                                    <td colspan="4" class="empty-state">No hourly logging statements logged yet. Log hours to generate activity feed.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <!-- Salary Statement Modal / Receipt Popup -->
+    <div id="salary-modal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="receipt-glow-bar"></div>
+            <div class="modal-header">
+                <h2>Earnings Statement</h2>
+                <button class="btn-close-modal" id="btn-close-modal">
+                    <svg class="close-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="receipt">
+                    <div class="receipt-header">
+                        <div class="receipt-stamp">WAGE SLIP</div>
+                        <h3 id="receipt-emp-name">Employee Name</h3>
+                        <p id="receipt-emp-cnic">CNIC: 00000-0000000-0</p>
+                    </div>
+                    <hr class="dashed-line">
+                    <div class="receipt-details">
+                        <div class="detail-row">
+                            <span class="label">Valuation Date</span>
+                            <span class="value" id="receipt-date">YYYY-MM-DD</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">Accumulated Hours</span>
+                            <span class="value" id="receipt-total-hours">0 Hours</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">Wages Valuation Rate</span>
+                            <span class="value" id="receipt-rate">Rs. 0.00 / hr</span>
+                        </div>
+                    </div>
+                    <hr class="dashed-line">
+                    <div class="receipt-total">
+                        <span class="total-label">Total Compensation</span>
+                        <h2 class="total-amount" id="receipt-salary">Rs. 0</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="btn-print-receipt">
+                    Print Statement
+                </button>
+                <button class="btn-primary" id="btn-dismiss-modal">
+                    Close Receipt
+                </button>
+            </div>
+        </div>
+    </div>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
