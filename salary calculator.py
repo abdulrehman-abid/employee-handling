@@ -3,9 +3,39 @@
 from datetime import datetime
 now = datetime.now().strftime("%y-%m-%d")
 
-"""======================= Engine ======================="""
+"""===================== Database ======================="""
+import mysql.connector
 
-def CNIC_verify():
+connection = mysql.connector.connect(
+    host = "localhost",
+    user = "root",
+    password = "my_password",
+    database = "employees"
+)
+
+cursor = connection.cursor()
+"""======================= Engine ======================="""
+def find_employee_CNIC():
+    while True:
+                try:
+                    employee_CNIC = (input("Enter your CNIC: ")).replace("-", "").strip()
+               
+                    if len(employee_CNIC) != 13 or not employee_CNIC.isdigit():
+                        print( "Invalid CNIC OR It should be 13 digits long.")
+                        continue
+                    else:
+                        cursor.execute("SELECT * FROM emp_info where CNIC = %s",(employee_CNIC, ))
+                        data = cursor.fetchone()
+    
+                        if not data:
+                            print("This CNIC is not registered.")
+                            continue
+    
+                        return employee_CNIC
+    
+                except ValueError:
+                    print("Invalid input. Please enter a valid CNIC number.")
+def get_new_CNIC():
     while True:
             try:
                 employee_CNIC = (input("Enter your CNIC: ")).replace("-", "").strip()
@@ -14,15 +44,15 @@ def CNIC_verify():
                     print( "Invalid CNIC. It should be 13 digits long.")
                     continue
                 else:
-                    data = open("data.txt", "r")
-                    data.seek(0)  
-                    data_content = data.read()
-                    data.close()
+                    cursor.execute("SELECT * FROM emp_info where CNIC = %s",(employee_CNIC, ))
+                    data = cursor.fetchone()
 
-                    if employee_CNIC in data_content:
+                    if len(data) != 0:
                         print("This CNIC is already registered.")
                         continue
+
                     return employee_CNIC
+
             except ValueError:
                 print("Invalid input. Please enter a valid CNIC number.")
 def name():
@@ -30,32 +60,35 @@ def name():
 
 def register_employee():
     employee_name = name()
-    employee_CNIC = CNIC_verify()
-    with open("data.txt", "a")as data:
-        data.write(f"{employee_name},{employee_CNIC}\n")
-        data.close()
+    employee_CNIC = get_new_CNIC()
+    sql = """
+    INSERT INTO emp_info(name, CNIC)
+    VALUES(%s, %s)
+    """
+    values = (employee_name, employee_CNIC)
+
+    cursor.execute(sql, values)
+    connection.commit()
 
 class salary_calculator():
     def __init__(self):
         self.salary = self.calculate_salary()
 
     def calculate_salary(self):
-        search_CNIC = input("Enter your CNIC to calculate salary for: ").replace("-", "").strip()
-        hours = []
+        search_CNIC = find_employee_CNIC()
+        total_hours = 0
         found = False
 
         try:        
-            with open("log_hour.txt", "r") as file:
-                file.seek(0)
-                for line in file:
-                    columns = line.strip().split(",")
-                    if len(columns) == 3 and columns[1] == search_CNIC:
-                            hours.append(int(columns[2]))
-                            found = True
-                rate = float(input("Enter the hourly rate: "))
-                total_hours = sum(hours)
-                salary = total_hours * rate
-                return f"Your salary is: {salary} Rupees for {total_hours} hours"
+            cursor.execute("SELECT * FROM work_hours where CNIC = %s",(search_CNIC, ))
+            data = cursor.fetchall()
+
+            for row in data:
+                total_hours += row[3]
+
+            rate = float(input("Enter the hourly rate: "))
+            salary = total_hours * rate
+            return f"Your salary is: {salary} Rupees for {total_hours} hours"
                             
         except FileNotFoundError:
             print("No hours logged yet.Please log hours first.")  
@@ -70,31 +103,29 @@ class salary_calculator():
 
 class log_daily_hours():
     def __init__ (self):
-        self.employee_CNIC = self.employee_CNIC()
+        self.is_registered = self.is_registered()
         self.log_hours = self.log_hours()
 
-    def employee_CNIC(self):
-        print("Enter CNIC to log hours")
-        input_CNIC = input("Enter your CNIC: ")
-        input_CNIC = input_CNIC.replace("-", "").strip()
-        try:
-            data_content = open("data.txt", "r").read()
-
-            if input_CNIC  in data_content:
-                return input_CNIC
-            else:
-                print("Invalid CNIC .OR register first")
-        except FileNotFoundError:
-            print("No data found.OR register first")
+    def is_registered(self):
+        find_employee_CNIC()
 
     def log_hours(self):
-        if self.employee_CNIC != None:
+        if self.is_registered != None:
             hours = int (input("Enter the hours worked today:"))
             if hours < 0 or hours > 24:
                 print("Invalid input. Please enter a number between 0 and 24.")
             else:
-                with open("log_hour.txt","a") as file:
-                    file.write(f"{now},{self.employee_CNIC},{hours}\n")
+                sql = """SELECT id FROM emp_info WHERE CNIC = %s"""
+                values = (self.is_registered, )
+                cursor.execute(sql, values)
+                data = cursor.fetchone()
+
+
+                sql = """INSERT INTO work_hours(employee_id, work_date, hours_worked)
+                VALUES(%s, %s, %s)"""
+                values = (data, now, hours)
+                cursor.execute(sql, values)
+                connection.commit()
                 return f"You have logged {hours} hours"
         
 """======================= User Interface ======================="""
@@ -103,8 +134,8 @@ class log_daily_hours():
 while True:
     print("\n================ Welcome to Salary Calculator ================")
     print("Welcome to Salary Calculator")
-    print("1.Enter your name and CNIC to register.")
-    print("2.Enter hours worked today, log hours")
+    print("1.Add a new employee")
+    print("2.Log hours")
     print("3.calculate salary")
     print("4.Exit")
     try:
