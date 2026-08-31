@@ -1,15 +1,15 @@
 """======================= salary calculator ======================="""
 """============================ Imports ============================"""
 from datetime import datetime
-now = datetime.now().strftime("%y-%m-%d")
-
+now = datetime.now().strftime("%Y-%m-%d")
+from getpass import getpass
 """===================== Database ======================="""
 import mysql.connector
-
+password = getpass("Enter your password of database: ")
 connection = mysql.connector.connect(
     host = "localhost",
     user = "root",
-    password = "my_password",
+    password = password,
     database = "employees"
 )
 
@@ -47,7 +47,7 @@ def get_new_CNIC():
                     cursor.execute("SELECT * FROM emp_info where CNIC = %s",(employee_CNIC, ))
                     data = cursor.fetchone()
 
-                    if len(data) != 0:
+                    if data :
                         print("This CNIC is already registered.")
                         continue
 
@@ -69,6 +69,7 @@ def register_employee():
 
     cursor.execute(sql, values)
     connection.commit()
+    return "employee registered successfully"
 
 class salary_calculator():
     def __init__(self):
@@ -77,24 +78,25 @@ class salary_calculator():
     def calculate_salary(self):
         search_CNIC = find_employee_CNIC()
         total_hours = 0
-        found = False
+        
 
-        try:        
-            cursor.execute("SELECT * FROM work_hours where CNIC = %s",(search_CNIC, ))
-            data = cursor.fetchall()
+        sql = """SELECT id FROM emp_info where CNIC = %s"""
+        Values = (search_CNIC, )
+        cursor.execute(sql, Values)
 
-            for row in data:
-                total_hours += row[3]
+        employee_id = cursor.fetchone()[0]
+             
+        cursor.execute("SELECT sum(hours_worked) FROM work_hours where employee_id = %s",(employee_id, ))
+        total_hours = cursor.fetchone()[0]
+        if not total_hours :
+            print(f"No hours found for this CNIC: {search_CNIC}")
 
+        else:
             rate = float(input("Enter the hourly rate: "))
             salary = total_hours * rate
             return f"Your salary is: {salary} Rupees for {total_hours} hours"
-                            
-        except FileNotFoundError:
-            print("No hours logged yet.Please log hours first.")  
+        
 
-        if not found :
-            print(f"No hours found for this CNIC: {search_CNIC}")
 
         
         
@@ -107,7 +109,7 @@ class log_daily_hours():
         self.log_hours = self.log_hours()
 
     def is_registered(self):
-        find_employee_CNIC()
+        return find_employee_CNIC()
 
     def log_hours(self):
         if self.is_registered != None:
@@ -118,7 +120,7 @@ class log_daily_hours():
                 sql = """SELECT id FROM emp_info WHERE CNIC = %s"""
                 values = (self.is_registered, )
                 cursor.execute(sql, values)
-                data = cursor.fetchone()
+                data = cursor.fetchone()[0]
 
 
                 sql = """INSERT INTO work_hours(employee_id, work_date, hours_worked)
