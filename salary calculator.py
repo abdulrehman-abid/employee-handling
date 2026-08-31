@@ -1,4 +1,4 @@
-"""======================= salary calculator ======================="""
+"""======================================================= Salary Calculator ============================================================"""
 """============================ Imports ============================"""
 from datetime import datetime
 now = datetime.now().strftime("%Y-%m-%d")
@@ -129,7 +129,25 @@ class log_daily_hours():
                 cursor.execute(sql, values)
                 connection.commit()
                 return f"You have logged {hours} hours"
-        
+class get_emp_info():
+    def __init__(self):
+        self.emp_info = self.get_emp_info()
+
+    def get_emp_info(self):
+        sql = """SELECT * FROM emp_info"""
+        cursor.execute(sql)
+        data = cursor.fetchall()
+        return data
+class get_hours_worked():
+    def __init__(self):
+        self.hours_worked = self.get_hours_worked()
+
+    def get_hours_worked(self):
+        sql = """SELECT * FROM work_hours"""
+        cursor.execute(sql)
+        data = cursor.fetchall()
+        return data
+
 """======================= User Interface ======================="""
 
 
@@ -139,11 +157,13 @@ while True:
     print("1.Add a new employee")
     print("2.Log hours")
     print("3.calculate salary")
-    print("4.Exit")
+    print("4.Get employee info")
+    print("5.Get hours worked")
+    print("6.Exit")
     try:
-        user_input = int(input("Enter your choice(1-4): "))
+        user_input = int(input("Enter your choice(1-6): "))
     except ValueError:
-        print("Invalid input. Please enter a number between 1 and 4.")
+        print("Invalid input. Please enter a number between 1 and 6.")
         continue
     if user_input == 1:
         register_employee()
@@ -151,8 +171,13 @@ while True:
         log_daily_hours()
     elif user_input == 3:
         print(salary_calculator())
-    elif user_input == 4:
+    elif user_input == 6:
         print("Thank you for using Salary Calculator")
         break
+    elif user_input == 4:
+        print(get_emp_info())
+    elif user_input == 5:
+        print(get_hours_worked())
+
     else:
-        print("Invalid input. Please enter a number between 1 and 4.")
+        print("Invalid input. Please enter a number between 1 and 6.")
