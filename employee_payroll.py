@@ -1,4 +1,4 @@
-"""======================================================= Salary Calculator ============================================================"""
+"""======================================================= employee payroll============================================================"""
 """============================ Imports ============================"""
 from datetime import datetime
 now = datetime.now().strftime("%Y-%m-%d")
@@ -113,7 +113,12 @@ class log_daily_hours():
 
     def log_hours(self):
         if self.is_registered != None:
-            hours = int (input("Enter the hours worked today:"))
+
+            try:
+                hours = int (input("Enter the hours worked today:"))
+            except ValueError:
+                print("Invalid input. Please enter a valid number.")
+                return
             if hours < 0 or hours > 24:
                 print("Invalid input. Please enter a number between 0 and 24.")
             else:
@@ -171,13 +176,20 @@ while True:
         log_daily_hours()
     elif user_input == 3:
         print(salary_calculator())
-    elif user_input == 6:
-        print("Thank you for using Salary Calculator")
-        break
+    
     elif user_input == 4:
         print(get_emp_info())
     elif user_input == 5:
         print(get_hours_worked())
+    elif user_input == 6:
+        print("Thank you for using Salary Calculator")
 
+        # === CLOSE CONNECTIONS HERE ===
+        cursor.close()
+        connection.close()
+        print("Database connection closed cleanly.")
+        # ==============================
+
+        break
     else:
-        print("Invalid input. Please enter a number between 1 and 6.")
+        print("Invalid input. Please enter a number between 1 and 6.")  
