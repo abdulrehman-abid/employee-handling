@@ -113,27 +113,29 @@ class log_daily_hours():
 
     def log_hours(self):
         if self.is_registered != None:
+            while True:
+                try:
+                    hours = int (input("Enter the hours worked today:"))
+                except ValueError:
+                    print("Invalid input. Please enter a valid number.")
+                    return
+                if hours < 0 or hours > 24:
+                    print("Invalid input. Please enter a number between 0 and 24.")
+                else:
+                    sql = """SELECT id FROM emp_info WHERE CNIC = %s"""
+                    values = (self.is_registered, )
+                    cursor.execute(sql, values)
+                    data = cursor.fetchone()[0]
 
-            try:
-                hours = int (input("Enter the hours worked today:"))
-            except ValueError:
-                print("Invalid input. Please enter a valid number.")
-                return
-            if hours < 0 or hours > 24:
-                print("Invalid input. Please enter a number between 0 and 24.")
-            else:
-                sql = """SELECT id FROM emp_info WHERE CNIC = %s"""
-                values = (self.is_registered, )
-                cursor.execute(sql, values)
-                data = cursor.fetchone()[0]
 
+                    sql = """INSERT INTO work_hours(employee_id, work_date, hours_worked)
+                    VALUES(%s, %s, %s)"""
+                    values = (data, now, hours)
+                    cursor.execute(sql, values)
+                    connection.commit()
+                    return f"You have logged {hours} hours"
+                break
 
-                sql = """INSERT INTO work_hours(employee_id, work_date, hours_worked)
-                VALUES(%s, %s, %s)"""
-                values = (data, now, hours)
-                cursor.execute(sql, values)
-                connection.commit()
-                return f"You have logged {hours} hours"
 class get_emp_info():
     def __init__(self):
         self.emp_info = self.get_emp_info()
