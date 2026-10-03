@@ -111,7 +111,7 @@ def delete_employee(cnic:str):
 def employee_panel():
     return page("Employee Panel","""
     <h3>Log Hours</h3>
-    <form method="post" action="/employee/log-hours-form">
+    <form method="post" action="/employee/log-hours-form">  
         <input name= "cnic" type="number"  placeholder="Enter your CNIC" required pattern="[0-9]{13}">
         <input name= "hours" type="number" min="0" max="24" placeholder="Enter hours worked today" required>
         <button type="submit">Log Hours</button>
