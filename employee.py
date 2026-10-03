@@ -19,16 +19,12 @@ class Employee:
         return data[0]
     
     def calculate_salary(self, rate):
-        search_CNIC = self.CNIC
-        
         total_hours = 0
         
-
-             
         cursor.execute("SELECT sum(hours_worked) FROM work_hours where employee_id = %s",(self.employee_id(), ))
         total_hours = cursor.fetchone()
         if not total_hours or total_hours[0] is None:
-            return f"No hours found for this CNIC: {search_CNIC}"
+            return f"No hours found for this CNIC: {self.CNIC}"
 
         else:
             total_hours = total_hours[0]
@@ -36,28 +32,23 @@ class Employee:
             return f"Your salary is: {salary} Rupees for {total_hours} hours"
     
     def __repr__(self):
-        return (f"Salary Calculator: {self.calculate_salary()}")
+        return f"Employee(name={self.name}, CNIC={self.CNIC})"
 
 
 
     def log_hours(self, hours):
         
-        while True:
-            if hours < 0 or hours > 24:
-                print("Invalid input. Please enter a number between 0 and 24.")
-                continue
-            else:
-                now = datetime.now().strftime("%Y-%m-%d")
-                data = self.employee_id()
-                if not data:
-                    return "CNIC not registered"
+        now = datetime.now().strftime("%Y-%m-%d")
+        data = self.employee_id()
+        if not data:
+            return "CNIC not registered"
 
-                sql = """INSERT INTO work_hours(employee_id, work_date, hours_worked)
-                VALUES(%s, %s, %s)"""
-                values = (data, now, hours)
-                cursor.execute(sql, values)
-                conn.commit()
-                return f"You have logged {hours} hours"
+        sql = """INSERT INTO work_hours(employee_id, work_date, hours_worked)
+        VALUES(%s, %s, %s)"""
+        values = (data, now, hours)
+        cursor.execute(sql, values)
+        conn.commit()
+        return f"You have logged {hours} hours"
 
 
     def get_hours_worked(self):

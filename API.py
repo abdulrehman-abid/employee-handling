@@ -3,7 +3,7 @@
 #                                Imports
 #====================================================================================
 
-from fastapi import FastAPI, Form
+from fastapi import FastAPI, Form, HTTPException
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 from db import get_connection
@@ -61,12 +61,12 @@ def admin_panel():
     <h3>Register Employee</h3>
     <form method="post" action="/admin/register-form">
         <input name="name" placeholder="Enter employee name" required>
-        <input name="cnic" type="number" min="1000000000000" max="9999999999999" placeholder="Enter employee CNIC" required pattern="[0-9]{13}">
+        <input name="cnic" type="number"  placeholder="Enter employee CNIC" required pattern="[0-9]{13}">
         <button type="submit">Register</button>
     </form><hr>
         <h3>Delete Employee</h3>
     <form method="get" action="/admin/delete-employee">
-        <input name="cnic" type="number" min="1000000000000" max="9999999999999" placeholder="Enter employee CNIC" required pattern="[0-9]{13}">
+        <input name="cnic" type="number"  placeholder="Enter employee CNIC" required pattern="[0-9]{13}">
         <button type="submit">Delete</button>
     </form><hr>
     <h3>Get Employee Info</h3>
@@ -79,12 +79,12 @@ def admin_panel():
 def register_employee(name:str = Form(...), cnic:str = Form(...)):
     cnic = cnic.replace("-", "").strip()
     if len(cnic)!=13 or not cnic.isdigit():
-        return page("Error", "CNIC must be 13 digits and numeric")
+        raise HTTPException(status_code=400, detail="CNIC must be 13 digits and numeric")
     # Check duplicate using db (original employer.py doesn't check)
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM emp_info WHERE CNIC=%s", (cnic,))
     if cursor.fetchone():
-        return page("Error", f"CNIC {cnic} already registered")
+        raise HTTPException(status_code=409, detail="Employee with this CNIC already exists")
     # Use your ORIGINAL admin class
     emp = admin(name, cnic)
     result = emp.register_employee()
@@ -112,20 +112,20 @@ def employee_panel():
     return page("Employee Panel","""
     <h3>Log Hours</h3>
     <form method="post" action="/employee/log-hours-form">
-        <input name= "cnic" type="number" min="1000000000000" max="9999999999999" placeholder="Enter your CNIC" required pattern="[0-9]{13}">
+        <input name= "cnic" type="number"  placeholder="Enter your CNIC" required pattern="[0-9]{13}">
         <input name= "hours" type="number" min="0" max="24" placeholder="Enter hours worked today" required>
         <button type="submit">Log Hours</button>
     </form>
     <hr>
     <h3>Get Hours</h3>
     <form method="get" action="/employee/hours-view">
-        <input name= "cnic" type="number" min="1000000000000" max="9999999999999" placeholder="Enter your CNIC" required pattern="[0-9]{13}">
+        <input name= "cnic" type="number"  placeholder="Enter your CNIC" required pattern="[0-9]{13}">
         <button type="submit">Get Hours</button>
     </form>
     <hr>
         <h3>Calculate Salary</h3>
     <form method="get" action="/employee/salary-view">
-        <input name= "cnic" type="number" min="1000000000000" max="9999999999999" placeholder="Enter your CNIC" required pattern="[0-9]{13}">
+        <input name= "cnic" type="number"  placeholder="Enter your CNIC" required pattern="[0-9]{13}">
         <input name= "rate" type="number" placeholder="Enter hourly rate" required>
         <button type="submit">Calculate Salary</button>
     </form>
@@ -145,7 +145,7 @@ def hours_view(cnic:str):
     emp = Employee("", cnic)
     data = emp.get_hours_worked()
     if not data:
-        return page("Hours", "<p>No hours found</p>")
+        raise HTTPException(status_code=404, detail="No hours found for this CNIC")
     return page("Hours", f"<p>{data}</p>")
 
 @app.post("/employee/log-hours-form", response_class=HTMLResponse)
