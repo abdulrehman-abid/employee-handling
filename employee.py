@@ -1,4 +1,6 @@
-from db import connection, cursor
+from db import get_connection
+conn = get_connection()
+cursor = conn.cursor()
 from datetime import datetime
 now = datetime.now().strftime("%Y-%m-%d")
 
@@ -11,11 +13,14 @@ class Employee:
         sql = """SELECT id FROM emp_info WHERE CNIC = %s"""
         values = (self.CNIC, )
         cursor.execute(sql, values)
-        data = cursor.fetchone()[0]
-        return data
+        data = cursor.fetchone()
+        if data == None:
+            return None
+        return data[0]
     
-    def calculate_salary(self):
+    def calculate_salary(self, rate):
         search_CNIC = self.CNIC
+        
         total_hours = 0
         
 
@@ -26,7 +31,6 @@ class Employee:
             return f"No hours found for this CNIC: {search_CNIC}"
 
         else:
-            rate = int(input("Enter the hourly rate: "))
             salary = total_hours * rate
             return f"Your salary is: {salary} Rupees for {total_hours} hours"
     
@@ -35,14 +39,9 @@ class Employee:
 
 
 
-    def log_hours(self):
+    def log_hours(self, hours):
         
         while True:
-            try:
-                hours = int (input("Enter the hours worked today:"))
-            except ValueError:
-                print("Invalid input. Please enter a valid number.")
-                continue
             if hours < 0 or hours > 24:
                 print("Invalid input. Please enter a number between 0 and 24.")
                 continue
@@ -58,14 +57,21 @@ class Employee:
                 VALUES(%s, %s, %s)"""
                 values = (data, now, hours)
                 cursor.execute(sql, values)
-                connection.commit()
+                conn.commit()
                 return f"You have logged {hours} hours"
 
 
     def get_hours_worked(self):
         sql = """SELECT * FROM work_hours where employee_id = %s"""
-        values = (self.employee_id(), )
-        cursor.execute(sql, values, )
-        data = cursor.fetchall()
-        return data
-
+        employee_id = self.employee_id()
+        if not employee_id:
+            return "CNIC not registered"
+        values = (employee_id, )
+        cursor.execute(sql, values)
+        raw_data = cursor.fetchall()
+        if not raw_data:
+            return "No hours found"
+        data = []
+        for lines in raw_data:
+            data.append(f"Date: {lines[2]} | Hours Worked: {lines[3]}")
+        return "<br>".join(data)
