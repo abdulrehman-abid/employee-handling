@@ -1,3 +1,8 @@
+
+#====================================================================================
+#                                Imports
+#====================================================================================
+
 from fastapi import FastAPI, Form
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
@@ -18,6 +23,10 @@ class AdminForm(BaseModel):
     CNIC : str
     work_date : date = date.today()
 
+#====================================================================================
+#                                Body(HTML,CSS)
+#====================================================================================
+
 def page(title, body):
     return f"""
     <html><head><title>{title}</title>
@@ -29,7 +38,11 @@ def page(title, body):
         </style></head><body><div class="box"><h2>{title}</h2>{body}
         <br><br><a href="/">Home</a> | <a href="/admin">Admin</a> | <a href="/employee">Employee</a> | <a href="/docs">Docs</a>
         </div></body></html>
-    """
+            """
+#====================================================================================
+#                                Home Page
+#====================================================================================
+
 @app.get("/", response_class=HTMLResponse)
 def root():
     return page("employee payroll - Home page", """ 
@@ -38,20 +51,28 @@ def root():
     <p><a href="/admin"><button>Admin Panel</button></a></p>
     <p><a href="/employee"><button>Employee Panel</button></a></p>""")
 
+#====================================================================================
+#                                Admin Panel
+#====================================================================================
+
 @app.get("/admin", response_class=HTMLResponse)
 def admin_panel():
     return page("Admin Panel", """
     <h3>Register Employee</h3>
     <form method="post" action="/admin/register-form">
         <input name="name" placeholder="Enter employee name" required>
-        <input name="cnic" placeholder="Enter employee CNIC" required>
+        <input name="cnic" type="number" min="1000000000000" max="9999999999999" placeholder="Enter employee CNIC" required pattern="[0-9]{13}">
         <button type="submit">Register</button>
+    </form><hr>
+        <h3>Delete Employee</h3>
+    <form method="get" action="/admin/delete-employee">
+        <input name="cnic" type="number" min="1000000000000" max="9999999999999" placeholder="Enter employee CNIC" required pattern="[0-9]{13}">
+        <button type="submit">Delete</button>
     </form><hr>
     <h3>Get Employee Info</h3>
     <form method="get" action="/admin/employee-view">
-        <input name="cnic" placeholder="Enter CNIC" required>
         <button type="submit">Get Info</button>
-    </form>
+    </form><hr>
     """)
 
 @app.post("/admin/register-form", response_class=HTMLResponse)
@@ -70,34 +91,45 @@ def register_employee(name:str = Form(...), cnic:str = Form(...)):
     return page("Success", f"<p style='color:green'>{result}</p>")
 
 @app.get("/admin/employee-view",response_class=HTMLResponse)
-def employee_view(cnic:str):
-    cnic = cnic.replace("-", "").strip()
-    emp = admin("", cnic)
+def employee_view():
+    emp = admin("", "")
     data = emp.employee_fetchall()  # uses your original employer.py
     return page("Employee Info", f"<pre>{data if data else 'Not found'}</pre>")
+
+@app.get("/admin/delete-employee", response_class=HTMLResponse)
+def delete_employee(cnic:str):
+    cnic = cnic.replace("-", "").strip()
+    emp = admin("", cnic)
+    result = emp.delete_employee()
+    return page("Delete Employee", f"<p>{result}</p>")
+
+#====================================================================================
+#                                Employee Panel
+#====================================================================================
 
 @app.get("/employee", response_class=HTMLResponse)
 def employee_panel():
     return page("Employee Panel","""
-    <h3>Calculate Salary</h3>
-    <form method="get" action="/employee/salary-view">
-        <input name= "cnic" placeholder="Enter your CNIC" required>
-        <input name= "rate" type="number" placeholder="Enter hourly rate" required>
-        <button type="submit">Calculate Salary</button>
-    </form>
-    <hr>
     <h3>Log Hours</h3>
     <form method="post" action="/employee/log-hours-form">
-        <input name= "cnic" placeholder="Enter your CNIC" required>
+        <input name= "cnic" type="number" min="1000000000000" max="9999999999999" placeholder="Enter your CNIC" required pattern="[0-9]{13}">
         <input name= "hours" type="number" min="0" max="24" placeholder="Enter hours worked today" required>
         <button type="submit">Log Hours</button>
     </form>
     <hr>
     <h3>Get Hours</h3>
     <form method="get" action="/employee/hours-view">
-        <input name= "cnic" placeholder="Enter your CNIC" required>
+        <input name= "cnic" type="number" min="1000000000000" max="9999999999999" placeholder="Enter your CNIC" required pattern="[0-9]{13}">
         <button type="submit">Get Hours</button>
     </form>
+    <hr>
+        <h3>Calculate Salary</h3>
+    <form method="get" action="/employee/salary-view">
+        <input name= "cnic" type="number" min="1000000000000" max="9999999999999" placeholder="Enter your CNIC" required pattern="[0-9]{13}">
+        <input name= "rate" type="number" placeholder="Enter hourly rate" required>
+        <button type="submit">Calculate Salary</button>
+    </form>
+
     """)
 
 @app.get("/employee/salary-view", response_class=HTMLResponse)
@@ -123,7 +155,9 @@ def log_hours(cnic:str = Form(...), hours:int = Form(...)):
     data = emp.log_hours(hours)
     return page("Logged", f"<p>{data}</p>")
 
-# JSON API (for /docs)
+#====================================================================================
+#                                JSON API (for /docs)
+#====================================================================================
 @app.post("/admin/register")
 def api_register(data: EmployeeCreate):
     return register_employee(data.name, data.CNIC)

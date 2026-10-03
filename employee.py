@@ -26,11 +26,12 @@ class Employee:
 
              
         cursor.execute("SELECT sum(hours_worked) FROM work_hours where employee_id = %s",(self.employee_id(), ))
-        total_hours = cursor.fetchone()[0]
-        if not total_hours :
+        total_hours = cursor.fetchone()
+        if not total_hours or total_hours[0] is None:
             return f"No hours found for this CNIC: {search_CNIC}"
 
         else:
+            total_hours = total_hours[0]
             salary = total_hours * rate
             return f"Your salary is: {salary} Rupees for {total_hours} hours"
     
@@ -47,11 +48,9 @@ class Employee:
                 continue
             else:
                 now = datetime.now().strftime("%Y-%m-%d")
-                sql = """SELECT id FROM emp_info WHERE CNIC = %s"""
-                values = (self.CNIC, )
-                cursor.execute(sql, values)
-                data = cursor.fetchone()[0]
-
+                data = self.employee_id()
+                if not data:
+                    return "CNIC not registered"
 
                 sql = """INSERT INTO work_hours(employee_id, work_date, hours_worked)
                 VALUES(%s, %s, %s)"""
