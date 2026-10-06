@@ -81,7 +81,7 @@ class admin:
                     <th>ID</th>
                     <th>Name</th>
                     <th>CNIC</th>
-                    <th>Total Hours</th>
+                    <th>Total unpaid hours</th>
                 </tr>
             </thead>
             <tbody>
@@ -89,4 +89,31 @@ class admin:
             </tbody>
         </table>
     """
-    
+    def salary_payment(self, rate):
+        emp_id = self.employee_id()
+        if emp_id is None:
+            return "Employee not found"
+
+        # 2. sum unpaid hours
+        cursor.execute("SELECT COALESCE(SUM(hours_worked),0) FROM work_hours WHERE employee_id=%s", (emp_id,))
+        total_hours = cursor.fetchone()[0]
+        if total_hours == 0:
+            return "No unpaid hours"
+
+        total_salary = total_hours * int(rate)
+
+        # 3. save slip
+        cursor.execute("INSERT INTO salary_payments (employee_id, total_hours, hourly_rate, total_salary) VALUES (%s,%s,%s,%s)",
+                    (emp_id, total_hours, rate, total_salary))
+
+        # 4. shift hours to history table
+        cursor.execute("""
+            INSERT INTO work_hours_history (employee_id, work_date, hours_worked)
+            SELECT employee_id, work_date, hours_worked FROM work_hours WHERE employee_id=%s
+        """, (emp_id,))
+
+        # 5. clear current hours so next month doesn't double count
+        cursor.execute("DELETE FROM work_hours WHERE employee_id=%s", (emp_id,))
+
+        conn.commit()
+        return f"Paid CNIC {self.CNIC}: {total_hours} hrs x {rate} = {total_salary} - moved to history"

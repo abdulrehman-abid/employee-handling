@@ -61,18 +61,27 @@ def admin_panel():
     <h3>Register Employee</h3>
     <form method="post" action="/admin/register-form">
         <input name="name" placeholder="Enter employee name" required>
-        <input name="cnic" type="number"  placeholder="Enter employee CNIC" required pattern="[0-9]{13}">
+        <input name="cnic" type="number"  placeholder="Enter employee CNIC (only numbers)" required pattern="[0-9]{13}">
         <button type="submit">Register</button>
     </form><hr>
         <h3>Delete Employee</h3>
     <form method="get" action="/admin/delete-employee">
-        <input name="cnic" type="number"  placeholder="Enter employee CNIC" required pattern="[0-9]{13}">
+        <input name="cnic" type="number"  placeholder="Enter employee CNIC (only numbers)" required pattern="[0-9]{13}">
         <button type="submit">Delete</button>
     </form><hr>
     <h3>Get Employee Info</h3>
     <form method="get" action="/admin/employee-view">
         <button type="submit">Get Info</button>
     </form><hr>
+    <hr>
+        <h3>Calculate Salary</h3>
+    <form method="post" action="/admin/salary-payment">
+        <input name= "cnic" type="number"  placeholder="Enter your CNIC (only numbers)" required pattern="[0-9]{13}">
+        <input name= "rate" type="number" placeholder="Enter hourly rate" required>
+        <button type="submit">pay salary</button>
+
+    </form>
+
     """)
 
 @app.post("/admin/register-form", response_class=HTMLResponse)
@@ -103,6 +112,12 @@ def delete_employee(cnic:str):
     result = emp.delete_employee()
     return page("Delete Employee", f"<p>{result}</p>")
 
+@app.post("/admin/salary-payment", response_class=HTMLResponse)
+def salary_payment(cnic:str = Form(...), rate:int = Form(...)):
+    cnic = cnic.replace("-", "").strip()
+    Admin= admin("", cnic)
+    data = Admin.salary_payment(rate)
+    return page("Salary Payment", f"<p>{data}</p>")
 #====================================================================================
 #                                Employee Panel
 #====================================================================================
@@ -112,20 +127,20 @@ def employee_panel():
     return page("Employee Panel","""
     <h3>Log Hours</h3>
     <form method="post" action="/employee/log-hours-form">  
-        <input name= "cnic" type="number"  placeholder="Enter your CNIC" required pattern="[0-9]{13}">
+        <input name= "cnic" type="number"  placeholder="Enter your CNIC (only numbers)" required pattern="[0-9]{13}">
         <input name= "hours" type="number" min="0" max="24" placeholder="Enter hours worked today" required>
         <button type="submit">Log Hours</button>
     </form>
     <hr>
     <h3>Get Hours</h3>
     <form method="get" action="/employee/hours-view">
-        <input name= "cnic" type="number"  placeholder="Enter your CNIC" required pattern="[0-9]{13}">
+        <input name= "cnic" type="number"  placeholder="Enter your CNIC (only numbers)" required pattern="[0-9]{13}">
         <button type="submit">Get Hours</button>
     </form>
     <hr>
         <h3>Calculate Salary</h3>
     <form method="get" action="/employee/salary-view">
-        <input name= "cnic" type="number"  placeholder="Enter your CNIC" required pattern="[0-9]{13}">
+        <input name= "cnic" type="number"  placeholder="Enter your CNIC (only numbers)" required pattern="[0-9]{13}">
         <input name= "rate" type="number" placeholder="Enter hourly rate" required>
         <button type="submit">Calculate Salary</button>
     </form>

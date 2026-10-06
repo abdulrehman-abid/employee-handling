@@ -21,15 +21,15 @@ class Employee:
     def calculate_salary(self, rate):
         total_hours = 0
         
-        cursor.execute("SELECT sum(hours_worked) FROM work_hours where employee_id = %s",(self.employee_id(), ))
+        cursor.execute("SELECT coalesce(sum(hours_worked),0) FROM work_hours where employee_id = %s",(self.employee_id(), ))
         total_hours = cursor.fetchone()
-        if not total_hours or total_hours[0] is None:
+        if not total_hours :
             return f"No hours found for this CNIC: {self.CNIC}"
 
         else:
             total_hours = total_hours[0]
             salary = total_hours * rate
-            return f"Your salary is: {salary} Rupees for {total_hours} hours"
+            return f"Your(cnic:{self.CNIC}) salary is: {salary} Rupees for {total_hours} hours"
     
     def __repr__(self):
         return f"Employee(name={self.name}, CNIC={self.CNIC})"
