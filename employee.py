@@ -1,6 +1,5 @@
 from db import get_connection
-conn = get_connection()
-cursor = conn.cursor()
+
 from datetime import datetime
 now = datetime.now().strftime("%Y-%m-%d")
 
@@ -10,6 +9,8 @@ class Employee:
         self.CNIC = CNIC
 
     def employee_id(self):
+        conn = get_connection()
+        cursor = conn.cursor()
         sql = """SELECT id FROM emp_info WHERE CNIC = %s"""
         values = (self.CNIC, )
         cursor.execute(sql, values)
@@ -20,7 +21,8 @@ class Employee:
     
     def calculate_salary(self, rate):
         total_hours = 0
-        
+        conn = get_connection()
+        cursor = conn.cursor()
         cursor.execute("SELECT coalesce(sum(hours_worked),0) FROM work_hours where employee_id = %s",(self.employee_id(), ))
         total_hours = cursor.fetchone()
         if not total_hours :
@@ -37,7 +39,8 @@ class Employee:
 
 
     def log_hours(self, hours):
-        
+        conn = get_connection()
+        cursor = conn.cursor()
         now = datetime.now().strftime("%Y-%m-%d")
         data = self.employee_id()
         if not data:
@@ -52,6 +55,8 @@ class Employee:
 
 
     def get_hours_worked(self):
+        conn = get_connection()
+        cursor = conn.cursor()
         sql = """SELECT * FROM work_hours where employee_id = %s"""
         employee_id = self.employee_id()
         if not employee_id:

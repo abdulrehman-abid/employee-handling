@@ -4,5 +4,4 @@ venv312/
 __pycache__/
 *.pyc
 *.pyo
-db.py
 .env

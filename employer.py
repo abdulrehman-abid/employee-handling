@@ -1,6 +1,5 @@
 from db import get_connection
-conn = get_connection()
-cursor = conn.cursor()
+
 from datetime import datetime
 class admin:
     def __init__(self, name, CNIC):
@@ -8,6 +7,8 @@ class admin:
         self.CNIC = CNIC
     
     def employee_id(self):
+        conn = get_connection()
+        cursor = conn.cursor()
         sql = """SELECT id FROM emp_info WHERE CNIC = %s"""
         values = (self.CNIC, )
         cursor.execute(sql, values)
@@ -23,12 +24,16 @@ class admin:
         VALUES(%s, %s, %s)
         """
         values = (self.name, self.CNIC, now)
-
+        conn = get_connection()
+        cursor = conn.cursor()
         cursor.execute(sql, values)
         conn.commit()
         return f"{self.name} is registered successfully"
 
     def delete_employee(self):
+        conn = get_connection()
+        cursor = conn.cursor()
+
         sql ="""select name from emp_info where CNIC=%s"""
         values = (self.CNIC, )
         cursor.execute(sql, values)
@@ -58,6 +63,8 @@ class admin:
         GROUP BY e.id, e.name, e.CNIC
         ORDER BY e.id ASC
         """
+        conn = get_connection()
+        cursor = conn.cursor()
         cursor.execute(sql)
         data = cursor.fetchall()
 
@@ -93,6 +100,9 @@ class admin:
         emp_id = self.employee_id()
         if emp_id is None:
             return "Employee not found"
+
+        conn = get_connection()
+        cursor = conn.cursor()
 
         # 2. sum unpaid hours
         cursor.execute("SELECT COALESCE(SUM(hours_worked),0) FROM work_hours WHERE employee_id=%s", (emp_id,))

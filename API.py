@@ -7,7 +7,6 @@ from fastapi import FastAPI, Form, HTTPException
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 from db import get_connection
-conn = get_connection()
 from employee import Employee
 from employer import admin
 from datetime import date
@@ -90,6 +89,7 @@ def register_employee(name:str = Form(...), cnic:str = Form(...)):
     if len(cnic)!=13 or not cnic.isdigit():
         raise HTTPException(status_code=400, detail="CNIC must be 13 digits and numeric")
     # Check duplicate using db (original employer.py doesn't check)
+    conn = get_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM emp_info WHERE CNIC=%s", (cnic,))
     if cursor.fetchone():
@@ -179,6 +179,7 @@ def api_register(data: EmployeeCreate):
 
 @app.get("/admin/employees")
 def get_all():
+    conn = get_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM emp_info")
     return cursor.fetchall()
