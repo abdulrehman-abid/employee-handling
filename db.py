@@ -3,19 +3,24 @@ import time
 from mysql.connector.errors import DatabaseError
 import os
 """===================== Database ======================="""
-
-def get_connection():
     # 2. Use os.getenv so it works locally and inside Docker automatically
-    connection = mysql.connector.connect(
-        host=os.getenv("DB_HOST", "db"),
-        port=int(os.getenv("DB_PORT", "3306")),
-        user=os.getenv("DB_USER", "root"),
-        password=os.getenv("DB_PASSWORD"),
-        database=os.getenv("DB_NAME", "employees"),
-        ssl_verify_cert=True,
-        ssl_verify_identity=True
-    )
-    return connection
+def get_connection():
+    host = os.getenv("DB_HOST", "db")
+    port = int(os.getenv("DB_PORT", "3306"))
+    user = os.getenv("DB_USER", "root")
+    password = os.getenv("DB_PASSWORD", "password")
+    database = os.getenv("DB_NAME", "employees")
+    if port == 4000:  # TiDB
+        return mysql.connector.connect(
+            host=host, port=port, user=user, password=password, database=database,
+            ssl_disabled=False,
+            ssl_verify_cert=False,
+            ssl_verify_identity=False
+        )
+    else:
+        return mysql.connector.connect(
+            host=host, port=port, user=user, password=password, database=database
+        )
 
 """===================== Create Tables ======================="""
 
