@@ -50,3 +50,8 @@ A Python employee management and payroll system built as a learning project.
 
 This project was built to practice Python OOP, MySQL, FastAPI,
 HTTP APIs, and backend development.
+
+## now I made my code global 
+
+using render I make it global and it is beginner level and better 
+It is my result of effort till 11-oct-26
