@@ -26,18 +26,24 @@ class AdminForm(BaseModel):
 #                                Body(HTML,CSS)
 #====================================================================================
 
+
 def page(title, body):
     return f"""
     <html><head><title>{title}</title>
     <style>
-    body{{font-family:Arial; background:#f0f2f5; padding:20px}}
-        .box{{background:white; padding:20px; border-radius:10px; max-width:650px; margin:auto; box-shadow:0 2px 8px #ccc}}
-        input{{padding:10px; margin:5px 0; width:95%}} button{{padding:10px 20px; background:#0d6efd; color:white; border:none; border-radius:5px; cursor:pointer}}
-        a{{text-decoration:none}} pre{{background:#eee; padding:10px; border-radius:5px}}
-        </style></head><body><div class="box"><h2>{title}</h2>{body}
-        <br><br><a href="/">Home</a> | <a href="/admin">Admin</a> | <a href="/employee">Employee</a> | <a href="/docs">Docs</a>
-        </div></body></html>
-            """
+    body{{font-family:Arial; background:#e6eaf0; display:flex; justify-content:center; align-items:center; min-height:100vh; margin:0; padding:20px}}
+    .box{{background:#e6eaf0; padding:40px; border-radius:35px; max-width:650px; width:100%; margin:auto; box-shadow:18px 18px 30px #c5cad3, -18px -18px 30px #ffffff; text-align:center}}
+    .box h2{{color:#3a4352; letter-spacing:1px}}
+    input{{background:#e6eaf0; border:none; padding:14px 20px; margin:10px 0; width:100%; border-radius:25px; box-shadow:inset 6px 6px 12px #c5cad3, inset -6px -6px 12px #ffffff; outline:none; color:#555}}
+    button{{background:#e6eaf0; border:none; padding:14px 30px; margin-top:15px; width:100%; border-radius:25px; box-shadow:8px 8px 16px #c5cad3, -8px -8px 16px #ffffff; color:#4a90e2; font-weight:700; cursor:pointer}}
+    button:active{{box-shadow:inset 6px 6px 12px #c5cad3, inset -6px -6px 12px #ffffff}}
+    a{{text-decoration:none; color:#6b7a90}} a:hover{{color:#4a90e2}}
+    pre{{background:#e6eaf0; padding:15px; border-radius:15px; box-shadow:inset 4px 4px 8px #c5cad3, inset -4px -4px 8px #ffffff; text-align:left}}
+    hr{{border:none; height:1px; background:#d1d7e0; margin:20px 0}}
+    </style></head><body><div class="box"><h2>{title}</h2>{body}
+    <br><br><a href="/">Home</a> | <a href="/admin">Admin</a> | <a href="/employee">Employee</a>
+    </div></body></html>
+    """
 #====================================================================================
 #                                Home Page
 #====================================================================================
